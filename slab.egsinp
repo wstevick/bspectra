@@ -1,0 +1,65 @@
+# Simple slab simulation
+
+# run control
+:start run control:
+    ncase = 2e1
+:stop run control:
+
+# geometry
+:start geometry definition:
+    :start geometry:
+        name = slab
+        library = egs_ndgeometry
+        type = EGS_XYZGeometry
+        x-planes = -5, 5
+        y-planes = -5, 5
+        z-planes = -10, 0, 0.1, 10
+        :start media input:
+            media = vacuum tantalum
+            set medium = 1 1
+        :stop media input:
+    :stop geometry:
+
+    simulation geometry = slab
+:stop geometry definition:
+
+:start media definition:
+    ae = 0.521
+    ap = 0.01
+    ue = 50.511
+    up = 50
+
+    :start tantalum:
+        density correction file = tantalum
+    :stop tantalum:
+:stop media definition:
+
+:start source definition:
+    :start source:
+        name = pencil_beam
+        library = egs_parallel_beam
+        charge = -1
+        direction = 0 0 1
+        :start spectrum:
+            type = monoenergetic
+            energy = 20
+        :stop spectrum:
+        :start shape:
+            type = point
+            position = 0 0 -10
+        :stop shape:
+    :stop source:
+
+    simulation source = pencil_beam
+:stop source definition:
+
+:start view control:
+    set color = tantalum 120 255 120 255
+:stop view control:
+
+:start ausgab object definition:
+    :start ausgab object:
+        name = tracks
+        library = egs_track_scoring
+    :stop ausgab object:
+:stop ausgab object definition:
