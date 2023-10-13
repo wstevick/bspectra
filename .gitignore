@@ -1,0 +1,9 @@
+bspectra_lib_linux.o
+bspectra_linux.o
+egs_advanced_application_lib_linux.o
+egs_advanced_application_linux.o
+egs_interface2_linux.o
+egsnrc_linux.F
+egsnrc_linux.mortlst
+egsnrc_linux.o
+mortjob.mortran
