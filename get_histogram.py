@@ -103,6 +103,6 @@ def get_histogram(
 
     # return the histogram values and errors, padded with zeros at the end
     return (
-        np.pad(data[:, 1], (0, total_nbins - histid), "constant"),
-        np.pad(data[:, 2], (0, total_nbins - histid), "constant"),
+        np.pad(data[:, 1], (0, total_nbins - histid), "constant") * total_nbins,
+        np.pad(data[:, 2], (0, total_nbins - histid), "constant") * total_nbins,
     )
