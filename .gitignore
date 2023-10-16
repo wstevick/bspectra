@@ -5,7 +5,6 @@ mortjob.mortran
 view_debug
 __pycache__
 *.pyc
-*.pickle
 *.egsdat
 *.ptracks
 *.mederr
