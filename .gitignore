@@ -3,3 +3,10 @@ egsnrc_*.F
 egsnrc_*.mortlst
 mortjob.mortran
 view_debug
+__pycache__
+*.pyc
+*.pickle
+*.egsdat
+*.ptracks
+*.mederr
+phsp_score.*
