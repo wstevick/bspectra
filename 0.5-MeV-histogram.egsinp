@@ -20,10 +20,10 @@
 #-------------------------------------------------------------------------------
 # This input block allows 'pegsless' runs
 :start media definition:
-    AE = 0.512
-    UE = 3.012
-    AP = 0.001
-    UP = 2.500
+    ae = 0.521
+    ap = 0.01
+    ue = 50.511
+    up = 50
     
     material data file = ../egs_brachy/lib/media/material.dat
 :stop media definition:
