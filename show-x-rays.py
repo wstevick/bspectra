@@ -15,12 +15,12 @@ hist_data = data["hist_data"]
 # the next command line argument says which to use
 plotnum = int(sys.argv[2])
 heights, errors = hist_data[plotnum]
-source_energy = hist_data[plotnum]
+source_energy = energies[plotnum]
 
 # work out the simulation paramaters
 max_energy = max(energies)
 (nbins,) = heights.shape
-bin_size = nbins / max_energy
+bin_size = max_energy / nbins
 print(max_energy, nbins, bin_size)
 
 # the centers of each histogram bin, in KeV
@@ -28,10 +28,10 @@ xs = (np.arange(nbins) + 1 / 2) * bin_size * 1e3
 
 plt.yscale("log")
 
-plt.xlabel('KeV')
+plt.xlabel("KeV")
 
 # the actual hsitogram plot, with errobars
-plt.errorbar(xs, heights, errors, 0, fmt='none')
+plt.errorbar(xs, heights, errors, 0, fmt="none", color="red")
 plt.fill_between(xs, heights, step="mid")
 
 plt.show()
