@@ -30,6 +30,9 @@ plt.yscale("log")
 
 plt.xlabel("KeV")
 
+print(heights.shape)
+print(heights[0])
+print(heights[-1])
 # the actual hsitogram plot, with errobars
 plt.errorbar(xs, heights, errors, 0, fmt="none", color="red")
 plt.fill_between(xs, heights, step="mid")
