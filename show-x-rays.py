@@ -21,7 +21,6 @@ source_energy = energies[plotnum]
 max_energy = max(energies)
 (nbins,) = heights.shape
 bin_size = max_energy / nbins
-print(max_energy, nbins, bin_size)
 
 # the centers of each histogram bin, in KeV
 xs = (np.arange(nbins) + 1 / 2) * bin_size * 1e3
@@ -30,11 +29,8 @@ plt.yscale("log")
 
 plt.xlabel("KeV")
 
-print(heights.shape)
-print(heights[0])
-print(heights[-1])
 # the actual hsitogram plot, with errobars
 plt.errorbar(xs, heights, errors, 0, fmt="none", color="red")
-plt.fill_between(xs, heights, step="mid")
+plt.bar(xs, heights, width=bin_size * 1e3)
 
 plt.show()
