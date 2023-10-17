@@ -17,20 +17,37 @@ plotnum = int(sys.argv[2])
 heights, errors = hist_data[plotnum]
 source_energy = energies[plotnum]
 
-# work out the simulation paramaters
-max_energy = max(energies)
+# work out the simulation paramaters (in KeV)
+max_energy = max(energies) * 1e3
 (nbins,) = heights.shape
 bin_size = max_energy / nbins
 
-# the centers of each histogram bin, in KeV
-xs = (np.arange(nbins) + 1 / 2) * bin_size * 1e3
+xs = (np.arange(nbins) + 1 / 2) * bin_size
 
 plt.yscale("log")
-
 plt.xlabel("KeV")
 
 # the actual hsitogram plot, with errobars
 plt.errorbar(xs, heights, errors, 0, fmt="none", color="red")
-plt.bar(xs, heights, width=bin_size * 1e3)
+plt.bar(xs, heights, width=bin_size)
+
+# plot visible X-ray spikes
+x_rays = [
+    (11.371, "L3N3"),
+    (11.92778, "L3 edge"),
+    (66.993, "KL2"),
+    (68.8069, "KL3"),
+    (77.57730000000001, "KM2"),
+    (77.983, "KM3"),
+    (80.0825, "KN2"),
+    (80.7347, "K edge"),
+]
+
+for x_ray, name in x_rays:
+    # convert energy to KeV, then calculate the position of the spike caused by the X-ray
+    pos_on_plot = max_energy - x_ray
+    plt.annotate(
+        name, (pos_on_plot, heights[np.argmin(np.abs(xs - pos_on_plot))])
+    )
 
 plt.show()
