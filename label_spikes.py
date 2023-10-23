@@ -15,7 +15,7 @@ ray_energies = np.array([float(ray[3]) for ray in (data)]) * 1e-3
 source_energy = float(input("Source energy of the simulation (KeV): "))
 bin_size = float(input("Bin size of the simulation (KeV): "))
 print("Enter potential spikes. EOF to exit")
-candidates = [source_energy - float(v.strip()) for v in sys.stdin]
+candidates = [source_energy - eval(v.strip()) for v in sys.stdin]
 
 found = []
 
