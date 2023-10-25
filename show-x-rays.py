@@ -22,14 +22,18 @@ max_energy = max(energies) * 1e3
 (nbins,) = heights.shape
 bin_size = max_energy / nbins
 
-xs = (np.arange(nbins) + 1 / 2) * bin_size
+# because of how fill_between works, we need an extra bin
+xs = np.arange(nbins + 1) * bin_size
 
 plt.yscale("log")
 plt.xlabel("KeV")
 
 # the actual hsitogram plot, with errobars
-plt.errorbar(xs, heights, errors, 0, fmt="none", color="red")
-plt.bar(xs, heights, width=bin_size)
+# because of how fill_between works, the last bin is ignored, so we add a dummy bin at the end
+plt.errorbar(
+    xs[:-1] + bin_size / 2, heights, errors, 0, fmt="none", color="red"
+)
+plt.fill_between(xs, np.append(heights, -1), step="post")
 
 # plot visible X-ray spikes
 x_rays = [
