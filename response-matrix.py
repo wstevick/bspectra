@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import _thread
+import gzip
 import os
 import pickle
 import queue
@@ -9,27 +10,31 @@ import numpy as np
 
 from get_histogram import get_histogram
 
+# main program variables
+# these are what you tweak to alter the simulation
 MAX_ENERGY = 2
-NBINS = 8000
-NCASE = 1e7
+BIN_SIZE = 0.01
+NBINS = int(MAX_ENERGY / BIN_SIZE)
+# re-calculate BIN_SIZE in case the number given doesn't evenly divide MAX_ENERGY
 BIN_SIZE = MAX_ENERGY / NBINS
-# the offset is because bin positions are given in their *centers*, not the left edges
 BIN_OFFSET = BIN_SIZE / 2
+NCASE = 1e4
 
 # this is used to facilitate communications between the main and controller threads
 q = queue.Queue()
 
-# the threads save data here
-response_matrix = np.empty((NBINS, NBINS), dtype=float)
-response_matrix_error = np.empty((NBINS, NBINS), dtype=float)
-
-print_lock = (
-    _thread.allocate_lock()
-)  # this is to keep two threads from trying to print at the same time
+# this is to keep two threads from trying to print at the same time
+print_lock = _thread.allocate_lock()
 
 # this is to keep track of when the program is done
 finished_jobs = 0
 finished_jobs_lock = _thread.allocate_lock()
+
+fname_base = str(round(time.time()))
+
+# this is to store intermediate data as the program runs
+intermediate_file = f"intermediate-{fname_base}"
+intermediate_file_lock = _thread.allocate_lock()
 
 
 # one of these will run for every core on the CPU
@@ -48,9 +53,13 @@ def controller_thread(bin_energies=None):
         hist_values, errors = get_histogram(
             histid, NCASE, NBINS, MAX_ENERGY, bin_energies=bin_energies
         )
-        # this would cause a race condition, except that two threads will never be writing to the same column of the matrix
-        response_matrix[:, histid - 1] = hist_values
-        response_matrix_error[:, histid - 1] = errors
+
+        # save the results of execution to a temperary file
+        with intermediate_file_lock:  # noqa: SIM117
+            with gzip.open(intermediate_file, "at") as f:
+                print(histid, end="\t", file=f)
+                print(" ".join(map(str, hist_values)), end="\t", file=f)
+                print(" ".join(map(str, errors)), file=f)
 
         with print_lock:
             print("histogram for histid =", histid, "done")
@@ -62,6 +71,7 @@ def controller_thread(bin_energies=None):
 
 def main():
     print("bins of", BIN_SIZE, "MeV")
+    print("intermediate data in", intermediate_file)
 
     # for testing purposes
     # this is used to make sure that the histogram bins are what we expect them to be
@@ -84,8 +94,21 @@ def main():
         else:
             time.sleep(1)
 
+    # read the data from the intermediate file and pickle it
+    response_matrix = np.empty((NBINS, NBINS), dtype=float)
+    response_matrix_error = np.empty((NBINS, NBINS), dtype=float)
+    for line in gzip.open(intermediate_file, "rt"):
+        histid, values, errors = line.strip().split("\t")
+        histid = int(histid)
+        response_matrix[:, histid - 1] = np.array(
+            list(map(float, values.split(" ")))
+        )
+        response_matrix_error[:, histid - 1] = np.array(
+            list(map(float, errors.split(" ")))
+        )
+
     # save the data to a file using pickle
-    savename = f"{round(time.time())}.pickle"
+    savename = f"save-{fname_base}.pickle"
     with open(savename, "wb") as save_file:
         pickle.dump((response_matrix, response_matrix_error), save_file)
         print("data saved to", repr(savename))
