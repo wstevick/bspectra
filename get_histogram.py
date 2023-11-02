@@ -45,16 +45,20 @@ def get_histogram(
         )
     inputfile = f"{fname_start}.egsinp"
 
-    # delete all created files, regardless of whether the process works or not
+    # create egsinp code with template vars set
+    # EGSnrc only outputs histograms upto the simulation energy level, so low-energy simulations need fewer bins
+    bin_size = max_energy / total_nbins
+    energy_threshold = bin_size / 10
+    energy = histid * bin_size
+    code = (
+        template_code.replace("TEMPLATE_VAR_NBINS", str(histid))
+        .replace("TEMPLATE_VAR_ENERGY", str(energy))
+        .replace("TEMPLATE_VAR_NCASE", str(ncase))
+        .replace("TEMPLATE_VAR_AE", str(0.511 + energy_threshold))
+        .replace("TEMPLATE_VAR_AP", str(energy_threshold))
+    )
     try:
-        # create temperary egsinp file with simulation-specific vars set
-        # EGSnrc only outputs histograms upto the simulation energy level, so low-energy simulations need fewer bins
-        energy = histid * max_energy / total_nbins
-        code = (
-            template_code.replace("TEMPLATE_VAR_NBINS", str(histid))
-            .replace("TEMPLATE_VAR_ENERGY", str(energy))
-            .replace("TEMPLATE_VAR_NCASE", str(ncase))
-        )
+        # create temperary egsinp file with the code generated
         with open(inputfile, "w") as f:
             f.write(code)
 
@@ -66,6 +70,7 @@ def get_histogram(
         )
         output = proc.stdout.decode().replace("\r", "")
     finally:
+        # delete all created files, regardless of whether the process works or not
         # sometimes this directory is created. Delete it if it exists
         for dirname in glob.iglob(f"egsrun_*_{fname_start}_*"):
             shutil.rmtree(dirname, ignore_errors=True)
@@ -103,6 +108,8 @@ def get_histogram(
 
     # return the histogram values and errors, padded with zeros at the end
     return (
-        np.pad(data[:, 1], (0, total_nbins - histid), "constant") * total_nbins,
-        np.pad(data[:, 2], (0, total_nbins - histid), "constant") * total_nbins,
+        np.pad(data[:, 1], (0, total_nbins - histid), "constant")
+        * total_nbins,
+        np.pad(data[:, 2], (0, total_nbins - histid), "constant")
+        * total_nbins,
     )
