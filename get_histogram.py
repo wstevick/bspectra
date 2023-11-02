@@ -55,7 +55,10 @@ def get_histogram(
         .replace("TEMPLATE_VAR_ENERGY", str(energy))
         .replace("TEMPLATE_VAR_NCASE", str(ncase))
         .replace("TEMPLATE_VAR_AE", str(0.511 + energy_threshold))
-        .replace("TEMPLATE_VAR_AP", str(energy_threshold))
+        .replace(
+            "TEMPLATE_VAR_AP",
+            str(max(energy_threshold, 9.9999527899328144e-004)),
+        )
     )
     try:
         # create temperary egsinp file with the code generated
@@ -88,6 +91,11 @@ def get_histogram(
                 histid, ncase, total_nbins, max_energy, ntries + 1
             )
         else:
+            print(
+                f"error running get_histogram({histid}, {ncase}, {total_nbins}, {max_energy})"
+            )
+            print(output)
+            print(proc.stderr.decode())
             return np.zeros(total_nbins), np.zeros(total_nbins)
 
     data = match.group(1)  # extract only the numbers from the output

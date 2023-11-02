@@ -6,9 +6,9 @@ from get_histogram import get_histogram
 
 energies = [0.5, 1, 1.5, 2]
 max_energy = max(energies)
-bin_size = .05
+bin_size = 0.25 * 1e-3
 nbins = int(max_energy / bin_size)
-ncase = 1e4
+ncase = 1e5
 
 hist_data = [
     get_histogram(int(energy / bin_size), ncase, nbins, max_energy)
