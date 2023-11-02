@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import _thread
-import gzip
 import os
 import pickle
 import queue
@@ -56,7 +55,7 @@ def controller_thread(bin_energies=None):
 
         # save the results of execution to a temperary file
         with intermediate_file_lock:  # noqa: SIM117
-            with gzip.open(intermediate_file, "at") as f:
+            with open(intermediate_file, "a") as f:
                 print(histid, end="\t", file=f)
                 print(" ".join(map(str, hist_values)), end="\t", file=f)
                 print(" ".join(map(str, errors)), file=f)
@@ -97,15 +96,16 @@ def main():
     # read the data from the intermediate file and pickle it
     response_matrix = np.empty((NBINS, NBINS), dtype=float)
     response_matrix_error = np.empty((NBINS, NBINS), dtype=float)
-    for line in gzip.open(intermediate_file, "rt"):
-        histid, values, errors = line.strip().split("\t")
-        histid = int(histid)
-        response_matrix[:, histid - 1] = np.array(
-            list(map(float, values.split(" ")))
-        )
-        response_matrix_error[:, histid - 1] = np.array(
-            list(map(float, errors.split(" ")))
-        )
+    with open(intermediate_file) as f:
+        for line in f:
+            histid, values, errors = line.strip().split("\t")
+            histid = int(histid)
+            response_matrix[:, histid - 1] = np.array(
+                list(map(float, values.split(" ")))
+            )
+            response_matrix_error[:, histid - 1] = np.array(
+                list(map(float, errors.split(" ")))
+            )
 
     # save the data to a file using pickle
     savename = f"save-{fname_base}.pickle"
