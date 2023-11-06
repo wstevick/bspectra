@@ -32,7 +32,7 @@ for spike in visible_spikes:
         continue
     # add all of the x-rays in the spike's bin to found
     found.extend(
-        (name, energy)
+        (name, round(energy, 10))
         for name, energy, in_bin in zip(ray_names, ray_energies, rays_in_bin)
         if in_bin
     )
