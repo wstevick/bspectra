@@ -13,21 +13,30 @@ orbital_J_values = [
 
 
 class NotationClass:
+    """
+    wrapper class for classes whose purpose is to provide a python interface for some sort of notation
+    """
+
     @classmethod
-    def latex_format_iupac(cls, iupac):
-        return cls.parse_iupac(iupac).to_iupac_str(latex=True)
+    def latex_format_iupac(cls, iupac_str):
+        """
+        take the unformatted IUPAC string and use LaTeX to properly display it
+        """
+        return cls.parse_iupac(iupac_str).to_iupac_str(latex=True)
 
 
 @dataclass(frozen=True)
 class ElectronPos(NotationClass):
+    """
+    class to store the position of an electron in an atom
+    """
+
     N: int
     orbital: str
     J: float
 
     @classmethod
     def parse_iupac(cls, pos_str, skip_rest=True):
-        # given an electron position (say, "M3"), give the N, orbital, and J represented
-        # also return the unparsed string. So parse_iupac_electron_pos("M3stuff") == ((3, "p", 3/2), "stuff")
         shell_name = pos_str[0]
         N = shell_names.index(shell_name.upper()) + 1
         if len(pos_str) > 1 and pos_str[1].isdecimal():
@@ -54,6 +63,10 @@ class ElectronPos(NotationClass):
 
 @dataclass(frozen=True)
 class Decay(NotationClass):
+    """
+    class to store the start and end positions of an electron decay
+    """
+
     start: ElectronPos
     end: ElectronPos
 
@@ -70,6 +83,3 @@ class Decay(NotationClass):
         return ElectronPos.to_iupac_str(
             self.end, latex
         ) + ElectronPos.to_iupac_str(self.start, latex)
-
-
-iupac_to_siegbahn = {}
