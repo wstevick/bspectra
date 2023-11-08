@@ -5,6 +5,8 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 
+from x_rays import Decay
+
 # read data from the file given by a command line argument
 with open(sys.argv[1], "rb") as f:
     data = pickle.load(f)
@@ -35,7 +37,7 @@ plt.errorbar(bin_centers, heights, errors, 0, fmt="none", color="red")
 plt.fill_between(xs, np.append(heights, -1), step="post")
 
 # plot visible X-ray spikes
-x_rays = [
+visible_x_rays = [
     ("L2M1", 10.3082),
     ("L1M1", 10.9287),
     ("L2M3", 10.99),
@@ -62,11 +64,11 @@ x_rays = [
     # ("L2 edge", 13.74167),
 ]
 
-for name, x_ray in x_rays:
+for name, x_ray in visible_x_rays:
     # convert energy to KeV, then calculate the position of the spike caused by the X-ray
     pos_on_plot = source_energy - x_ray
     plt.annotate(
-        name,
+        f"${Decay.latex_format_iupac(name)}$",
         (pos_on_plot, heights[np.argmin(np.abs(bin_centers - pos_on_plot))]),
     )
     plt.axvline(pos_on_plot, color="purple")

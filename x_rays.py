@@ -12,14 +12,20 @@ orbital_J_values = [
 ]
 
 
+class NotationClass:
+    @classmethod
+    def latex_format_iupac(cls, iupac):
+        return cls.parse_iupac(iupac).to_iupac_str(latex=True)
+
+
 @dataclass(frozen=True)
-class ElectronPos:
+class ElectronPos(NotationClass):
     N: int
     orbital: str
     J: float
 
     @classmethod
-    def parse_iupac(cls, pos_str):
+    def parse_iupac(cls, pos_str, skip_rest=True):
         # given an electron position (say, "M3"), give the N, orbital, and J represented
         # also return the unparsed string. So parse_iupac_electron_pos("M3stuff") == ((3, "p", 3/2), "stuff")
         shell_name = pos_str[0]
@@ -31,7 +37,10 @@ class ElectronPos:
             orbital_J_id = 1
             pos_str = pos_str[1:]
         orbital, J = orbital_J_values[orbital_J_id]
-        return cls(N, orbital, J), pos_str
+        if skip_rest:
+            return cls(N, orbital, J)
+        else:
+            return cls(N, orbital, J), pos_str
 
     def to_iupac_str(self, latex=True):
         orbital_J_id = orbital_J_values.index((self.orbital, self.J))
@@ -44,15 +53,18 @@ class ElectronPos:
 
 
 @dataclass(frozen=True)
-class Decay:
+class Decay(NotationClass):
     start: ElectronPos
     end: ElectronPos
 
     @classmethod
-    def parse_iupac(cls, decay_str):
-        end, decay_str = ElectronPos.parse_iupac(decay_str)
-        start, rest = ElectronPos.parse_iupac(decay_str)
-        return cls(start, end), rest
+    def parse_iupac(cls, decay_str, skip_rest=True):
+        end, decay_str = ElectronPos.parse_iupac(decay_str, skip_rest=False)
+        start, rest = ElectronPos.parse_iupac(decay_str, skip_rest=False)
+        if skip_rest:
+            return cls(start, end)
+        else:
+            return cls(start, end), rest
 
     def to_iupac_str(self, latex=True):
         return ElectronPos.to_iupac_str(
