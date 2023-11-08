@@ -30,6 +30,7 @@ matrix = matrix.T
 # normalize the matrix
 matrix /= matrix.sum(axis=1)
 # scale the matrix to show off low values
+# I may experiment with different algorithms for this, in the future
 matrix = k / (k - np.log(matrix))
 
 # create a screen with the dimensions of the matrix, then use the color function to put the matrix on the screen

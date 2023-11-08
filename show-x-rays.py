@@ -29,7 +29,7 @@ bin_centers = xs[:-1] + bin_size * 0.5
 plt.yscale("log")
 plt.xlabel("KeV")
 
-# the hsitogram plot, with errobars
+# the histogram plot, with errorbars
 plt.errorbar(bin_centers, heights, errors, 0, fmt="none", color="red")
 # because of how fill_between works, the last bin is ignored, so we add a dummy bin at the end
 plt.fill_between(xs, np.append(heights, -1), step="post")
