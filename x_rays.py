@@ -1,0 +1,63 @@
+from dataclasses import dataclass
+
+shell_names = "KLMN"
+orbitals = "spdfg"
+
+# orbital_J_values[x] indicates the l and J values for the orbital position x
+orbital_J_values = [
+    (orbital, J) if J > 0 else None
+    for orbital_idx, orbital in enumerate(orbitals)
+    for offset in [-1 / 2, 1 / 2]
+    for J in [orbital_idx + offset]
+]
+
+
+@dataclass(frozen=True)
+class ElectronPos:
+    N: int
+    orbital: str
+    J: float
+
+    @classmethod
+    def parse_iupac(cls, pos_str):
+        # given an electron position (say, "M3"), give the N, orbital, and J represented
+        # also return the unparsed string. So parse_iupac_electron_pos("M3stuff") == ((3, "p", 3/2), "stuff")
+        shell_name = pos_str[0]
+        N = shell_names.index(shell_name.upper()) + 1
+        if len(pos_str) > 1 and pos_str[1].isdecimal():
+            orbital_J_id = int(pos_str[1])
+            pos_str = pos_str[2:]
+        else:
+            orbital_J_id = 1
+            pos_str = pos_str[1:]
+        orbital, J = orbital_J_values[orbital_J_id]
+        return cls(N, orbital, J), pos_str
+
+    def to_iupac_str(self, latex=True):
+        orbital_J_id = orbital_J_values.index((self.orbital, self.J))
+        shell_name = shell_names[self.N - 1]
+        return shell_name + (
+            ("_" if latex else "") + str(orbital_J_id)
+            if orbital_J_id != 1
+            else ""
+        )
+
+
+@dataclass(frozen=True)
+class Decay:
+    start: ElectronPos
+    end: ElectronPos
+
+    @classmethod
+    def parse_iupac(cls, decay_str):
+        end, decay_str = ElectronPos.parse_iupac(decay_str)
+        start, rest = ElectronPos.parse_iupac(decay_str)
+        return cls(start, end), rest
+
+    def to_iupac_str(self, latex=True):
+        return ElectronPos.to_iupac_str(
+            self.end, latex
+        ) + ElectronPos.to_iupac_str(self.start, latex)
+
+
+iupac_to_siegbahn = {}
