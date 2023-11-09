@@ -48,16 +48,15 @@ def get_histogram(
     # create egsinp code with template vars set
     # EGSnrc only outputs histograms upto the simulation energy level, so low-energy simulations need fewer bins
     bin_size = max_energy / total_nbins
-    energy_threshold = 0.01
     energy = histid * bin_size
     code = (
         template_code.replace("TEMPLATE_VAR_NBINS", str(histid))
         .replace("TEMPLATE_VAR_ENERGY", str(energy))
         .replace("TEMPLATE_VAR_NCASE", str(ncase))
-        .replace("TEMPLATE_VAR_AE", str(0.511 + energy_threshold))
+        .replace("TEMPLATE_VAR_AE", str(max(0.511 + bin_size, 0.5115667283535004)))
         .replace(
             "TEMPLATE_VAR_AP",
-            str(max(energy_threshold, 9.9999527899328144e-004)),
+            str(max(bin_size, 0.000999995278993281)),
         )
     )
     try:
