@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json
+import pickle
 import sys
 
 from get_histogram import get_histogram
@@ -15,5 +15,5 @@ hist_data = [
     for energy in energies
 ]
 
-with open(sys.argv[1], "w") as f:
-    json.dump({"energies": energies, "hist_data": hist_data}, f)
+with open(sys.argv[1], "wb") as f:
+    pickle.dump({"energies": energies, "hist_data": hist_data}, f)

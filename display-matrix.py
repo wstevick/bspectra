@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import colorsys
-import json
 import math
+import pickle
 import sys
 
 import numpy as np
@@ -21,8 +21,8 @@ def get_color(v):
 to_color = np.vectorize(get_color, signature="()->(3)")
 
 
-with open(sys.argv[1]) as f:
-    matrix, _ = json.load(f)
+with open(sys.argv[1], "rb") as f:
+    matrix, _ = pickle.load(f)
 
 # need to transpose the matrix, because of how pygame handles arrays
 # also, this way the first axis is the histogram id, which is also more convenient

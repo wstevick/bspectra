@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import _thread
 import os
-import json
+import pickle
 import queue
 import time
 
@@ -93,7 +93,7 @@ def main():
         else:
             time.sleep(1)
 
-    # read the data from the intermediate file and json it
+    # read the data from the intermediate file and pickle it
     response_matrix = np.empty((NBINS, NBINS), dtype=float)
     response_matrix_error = np.empty((NBINS, NBINS), dtype=float)
     with open(intermediate_file) as f:
@@ -107,10 +107,10 @@ def main():
                 list(map(float, errors.split(" ")))
             )
 
-    # save the data to a file using json
-    savename = f"save-{fname_base}.json"
-    with open(savename, "w") as save_file:
-        json.dump((response_matrix, response_matrix_error), save_file)
+    # save the data to a file using pickle
+    savename = f"save-{fname_base}.pickle"
+    with open(savename, "wb") as save_file:
+        pickle.dump((response_matrix, response_matrix_error), save_file)
         print("data saved to", repr(savename))
 
 
