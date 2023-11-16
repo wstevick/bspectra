@@ -73,16 +73,12 @@ def main():
     print(f"bins of {BIN_SIZE} MeV")
     print(f"intermediate data in {intermediate_file!r}")
 
-    # for testing purposes
-    # this is used to make sure that the histogram bins are what we expect them to be
-    bin_energies = np.arange(NBINS) * BIN_SIZE + BIN_OFFSET
-
     # I'm using a producer/consumer model to divide the work between cores
     # I create a thread for each core on the CPU, and all of them start an EGSnrc process
     # when an EGSnrc process finishes, the thread that started it parses the data, saves it, and starts a new one
     # that way there's (almost) always an EGSnrc process running for each CPU core
     for _ in range(os.cpu_count()):
-        _thread.start_new_thread(controller_thread, (bin_energies,))
+        _thread.start_new_thread(controller_thread, ())
 
     for histid in range(1, NBINS + 1):
         q.put(histid)
