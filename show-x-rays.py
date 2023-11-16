@@ -73,6 +73,7 @@ for name, x_ray in visible_x_rays:
     plt.annotate(
         name,
         (pos_on_plot, heights[np.argmin(np.abs(bin_centers - pos_on_plot))]),
+        rotation=90,
     )
     plt.axvline(pos_on_plot, color="purple")
 

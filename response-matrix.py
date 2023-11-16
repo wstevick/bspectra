@@ -36,7 +36,7 @@ finished_jobs_lock = _thread.allocate_lock()
 fname_base = str(round(time.time()))
 
 # this is to store intermediate data as the program runs
-intermediate_file = f"intermediate-{fname_base}"
+intermediate_file = f"intermediate-{fname_base}.csv"
 intermediate_file_lock = _thread.allocate_lock()
 
 
