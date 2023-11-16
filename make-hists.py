@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import gzip
 import pickle
 import sys
 
@@ -15,7 +16,7 @@ hist_data = [
     for energy in energies
 ]
 
-with open(
+with gzip.open(
     sys.stdout.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
 ) as f:
     pickle.dump({"energies": energies, "hist_data": hist_data}, f)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import _thread
 import csv
+import gzip
 import os
 import pickle
 import queue
@@ -104,8 +105,8 @@ def main():
             ]
 
     # save the data to a file using pickle
-    savename = f"save-{fname_base}.pickle"
-    with open(savename, "wb") as save_file:
+    savename = f"save-{fname_base}.pickle.gz"
+    with gzip.open(savename, "wb") as save_file:
         pickle.dump(response_matrix, save_file)
         print(f"data saved to {savename!r}")
 

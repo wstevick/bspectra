@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import colorsys
+import gzip
 import math
 import pickle
 import sys
@@ -22,7 +23,7 @@ def get_color(v):
 to_color = np.vectorize(get_color, signature="()->(3)")
 
 
-with open(
+with gzip.open(
     sys.stdin.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
 ) as f:
     matrix = unp.nominal_values(pickle.load(f))

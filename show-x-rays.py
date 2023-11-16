@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import gzip
 import pickle
 import sys
 
@@ -7,7 +8,7 @@ import numpy as np
 import uncertainties.unumpy as unp
 
 # read data from the file given by a command line argument
-with open(
+with gzip.open(
     sys.stdin.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
 ) as f:
     data = pickle.load(f)
