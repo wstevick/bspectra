@@ -12,12 +12,12 @@ from get_histogram import get_histogram
 # main program variables
 # these are what you tweak to alter the simulation
 MAX_ENERGY = 2
-BIN_SIZE = 0.01
-NBINS = int(MAX_ENERGY / BIN_SIZE)
+#BIN_SIZE = 0.01
+NBINS = 2000# int(MAX_ENERGY / BIN_SIZE)
 # re-calculate BIN_SIZE in case the number given doesn't evenly divide MAX_ENERGY
 BIN_SIZE = MAX_ENERGY / NBINS
 BIN_OFFSET = BIN_SIZE / 2
-NCASE = 1e4
+NCASE = 1e6
 
 # this is used to facilitate communications between the main and controller threads
 q = queue.Queue()

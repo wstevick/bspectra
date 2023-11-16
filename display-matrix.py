@@ -28,7 +28,9 @@ with open(sys.argv[1], "rb") as f:
 # also, this way the first axis is the histogram id, which is also more convenient
 matrix = matrix.T
 # normalize the matrix
-matrix /= matrix.sum(axis=1)
+column_sums = matrix.sum(axis=1)
+column_sums[column_sums == 0] = 1
+matrix /= column_sums
 # scale the matrix to show off low values
 # I may experiment with different algorithms for this, in the future
 matrix = k / (k - np.log(matrix))
