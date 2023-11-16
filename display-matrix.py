@@ -6,6 +6,7 @@ import sys
 
 import numpy as np
 import pygame
+import uncertainties.unumpy as unp
 
 # this controls how much lower values are scaled up
 # for k = log 10, 0.1 becomes 1/2, 0.01 becomes 1/3, 0.001 becomes 1/4, etc.
@@ -24,7 +25,7 @@ to_color = np.vectorize(get_color, signature="()->(3)")
 with open(
     sys.stdin.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
 ) as f:
-    matrix, _ = pickle.load(f)
+    matrix = unp.nominal_values(pickle.load(f))
 
 
 # need to transpose the matrix, because of how pygame handles arrays

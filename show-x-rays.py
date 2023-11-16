@@ -18,7 +18,7 @@ hist_data = data["hist_data"]
 # the next command line argument says which to use
 plotnum = int(sys.argv[2])
 heights = unp.nominal_values(hist_data[plotnum])
-errors = np.std_devs(hist_data[plotnum])
+errors = unp.std_devs(hist_data[plotnum])
 source_energy = energies[plotnum] * 1e3
 
 # work out the simulation paramaters (in KeV)
