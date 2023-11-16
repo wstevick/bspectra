@@ -1,0 +1,278 @@
+##############################################################################
+#
+# MMC Simulation with monoenergetic point source. Designed for use with tutor7pp											   
+#
+##############################################################################
+
+#-------------------------------------------------------------------------------
+:start run control:
+    ncase = 1
+	geometry error limit = 100
+:stop run control:
+
+#-------------------------------------------------------------------------------
+:start run mode:
+    # egs_brachy has 3 run modes: 
+    #        'normal', 'superposition', and 'volume correction only'
+    run mode = normal
+:stop run mode:
+
+#-------------------------------------------------------------------------------
+# This input block allows 'pegsless' runs
+:start media definition:
+    ae = TEMPLATE_VAR_AE
+    ap = TEMPLATE_VAR_AP
+    ue = 50.511
+    up = 50
+    
+    material data file = ../egs_brachy/lib/media/material.dat
+:stop media definition:
+
+#-------------------------------------------------------------------------------
+# A gold MMC 
+:start geometry definition:
+
+    # An air box that will hold the entire geometry
+    :start geometry:
+        name = box
+        library = egs_glib
+        :start geometry definition:
+
+            :start geometry:
+
+                name = xyz_50cmx50cmx50cm_box
+                library = egs_box
+                box size = 50
+      
+                :start media input:
+                    media = AIR_TG43
+                :stop media input:
+
+            :stop geometry:
+
+            simulation geometry = xyz_50cmx50cmx50cm_box
+
+        :stop geometry definition:
+    :stop geometry:
+
+	# The volume in which we want to dose score (the gold MMC)
+    :start geometry:
+		name = phantom
+        library = egs_glib
+        ##Geometry for gold MMC cube 0.6mm^3
+        ## -0.03cm <= X, Y, Z <= 0.03cm with 1 voxel
+        :start geometry definition:
+
+            :start geometry:
+
+                name = xyz_0.06cmx0.06cmx0.06cm_0.03mm
+                library = egs_ndgeometry
+                type    = EGS_XYZGeometry
+
+                x-slabs = -0.03, 0.06, 1
+                y-slabs = -0.03, 0.06, 1
+                z-slabs = -0.03, 0.06, 1
+
+                :start media input:
+                    media = Au
+                :stop media input:
+
+            :stop geometry:
+
+            simulation geometry = xyz_0.06cmx0.06cmx0.06cm_0.03mm
+
+        :stop geometry definition:
+		
+    :stop geometry:
+	
+	# The source geometry
+    :start geometry:
+        name = seed
+        library = egs_glib
+        :start geometry definition:
+
+            :start geometry:
+                library = egs_spheres
+                name = point
+                midpoint = 0 0 0
+                type = EGS_cSpheres
+                radii = 0.0001
+
+                :start media input:
+                    media = AIR_TG43_LD
+                    set medium = 0 0
+                :stop media input:
+            :stop geometry:
+
+            simulation geometry = point
+
+        :stop geometry definition:
+    :stop geometry:
+	
+    # Inscribe the seed in the scoring phantom
+    :start geometry:
+        name = phantom_with_seed
+        library = egs_genvelope
+        base geometry = phantom
+        inscribed geometries = seed
+    :stop geometry:
+
+    # Inscribe the phantom+seed in the large air box
+    :start geometry:
+        name = final
+        library = egs_genvelope
+        base geometry = box
+        inscribed geometries = phantom_with_seed
+    :stop geometry:
+
+    # Source, phantom, and simulation geometries all need to be explicitly 
+    # specified to egs_brachy
+
+    source geometries = seed
+
+    phantom geometries = phantom
+
+    simulation geometry = final
+
+:stop geometry definition:
+
+#-------------------------------------------------------------------------------
+:start volume correction:
+
+    # Scoring voxels which contain source geometries need to have their 
+    # volumes corrected to accurately score dose
+  :start source volume correction:
+      correction type = correct
+      density of random points (cm^-3) = 1E8
+
+      # This is a shape that encompasses the entire source geometry.
+      # Volume correction will only occur within the boundaries of this shape.
+      # Shape to define the bounding volume for volume correction and region discovery
+      :start shape:
+
+          type = sphere
+          radius = 0.00011
+          midpoint = 0 0 0
+
+      :stop shape:
+  :stop source volume correction:
+
+:stop volume correction:
+
+#-------------------------------------------------------------------------------
+:start source definition:
+
+    # Typical egs++ source input block
+    :start source:
+        library = egs_isotropic_source
+        name = PointSource
+        charge = -1
+
+        # This defines the radioactivity distribution within the source. 
+        # for the sphere source model
+        :start shape:
+
+            type = sphere
+            position = 0 0 0
+            radius = 0.0000001
+
+        :stop shape:
+
+        :start spectrum:
+            type = monoenergetic
+            energy = 0.5
+        :stop spectrum:
+    :stop source:
+
+    # The position of the source
+    :start transformations:
+        ## A null transformation
+
+        :start transformation:
+            translation = 0, 0, 0
+        :stop transformation:
+    :stop transformations:
+
+    # The source needs to be explicitly specified to egs_brachy. 
+    # This should be the same as the 'name' defined in source input block above.
+    simulation source = PointSource
+
+:stop source definition:
+
+
+#-------------------------------------------------------------------------------
+:start scoring options:
+
+    # Many scoring options are available in egs_brachy. 
+    # Please see the documentation for a full list.
+	
+	score tracklength dose = yes
+	score energy deposition = yes
+   
+    # The path to a file containing mass-energy absorption data for the 
+    # relevant media in the simulation    
+    muen file = ../egs_brachy/lib/muen/brachy_gold_1.5MeV.muendat
+    # Specify which media dose is scored in
+    muen for media = Au
+	
+	#pulse height distribution (hopefully)
+	pulse height regions = 1
+	pulse height bins = 50
+	
+#	:start spectrum scoring:
+#        type = surface count
+#        particle type = photon
+#        minimum energy = 0.000
+#        maximum energy = 0.5
+#        number of bins = 50
+#        output format = xmgr
+#   :stop spectrum scoring:
+
+:stop scoring options:
+
+#-------------------------------------------------------------------------------
+# Transport parameters
+## Default MC parameters for low energy sources; electron cutoff energy 1.5 MeV, photon cutoff energy 1 keV.
+
+:start MC transport parameter:
+    Global ECUT                    = 0.512
+    Global PCUT                    = 0.001
+    Source ECUT                    = 0.512
+    Source PCUT                    = 0.001
+    Fluorescent Photon Cutoff      = 0.001
+    Brems Cross Sections           = NRC
+    Rayleigh Scattering            = On
+    Electron Impact Ionization     = On
+:stop MC transport parameter:
+
+################################
+### AUSGAB OBJECTS
+################################
+:start ausgab object definition: # Only 1 ausgab definition block allowed
+
+	### Particle tracks
+	:start ausgab object:
+		name = tracks
+		library = egs_track_scoring
+	:stop ausgab object:
+	
+	### Dose scoring
+	:start ausgab object:
+		library = egs_dose_scoring
+		name = my_dose_scoring
+		region dose = yes
+		volume = 0.000216
+		dose regions = 1
+	:stop ausgab object:
+	
+	:start ausgab object:
+		library = egs_phsp_scoring
+		name = phsp_score
+		output format = IAEA
+		particle type = all
+		output directory = 
+		phase space geometry = phantom
+		score particles on = entry and exit
+	:stop ausgab object:
+	
+:stop ausgab object definition:
