@@ -8,7 +8,9 @@ import numpy as np
 from x_rays import Decay
 
 # read data from the file given by a command line argument
-with open(sys.argv[1], "rb") as f:
+with open(
+    sys.stdin.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
+) as f:
     data = pickle.load(f)
 energies = data["energies"]
 hist_data = data["hist_data"]

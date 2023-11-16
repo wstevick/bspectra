@@ -15,5 +15,7 @@ hist_data = [
     for energy in energies
 ]
 
-with open(sys.argv[1], "wb") as f:
+with open(
+    sys.stdout.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
+) as f:
     pickle.dump({"energies": energies, "hist_data": hist_data}, f)
