@@ -7,6 +7,7 @@ import subprocess
 import time
 
 import numpy as np
+import uncertainties.unumpy as unp
 
 MAX_TRIES = 5
 
@@ -53,11 +54,10 @@ def get_histogram(
         template_code.replace("TEMPLATE_VAR_NBINS", str(histid))
         .replace("TEMPLATE_VAR_ENERGY", str(energy))
         .replace("TEMPLATE_VAR_NCASE", str(ncase))
-        .replace("TEMPLATE_VAR_AE", str(max(0.511 + bin_size, 0.5115667283535004)))
         .replace(
-            "TEMPLATE_VAR_AP",
-            str(max(bin_size, 0.000999995278993281)),
+            "TEMPLATE_VAR_AE", str(max(0.511 + bin_size, 0.5115667283535004))
         )
+        .replace("TEMPLATE_VAR_AP", str(max(bin_size, 0.000999995278993281)))
     )
     try:
         # create temperary egsinp file with the code generated
@@ -115,8 +115,10 @@ def get_histogram(
 
     # return the histogram values and errors, padded with zeros at the end
     return (
-        np.pad(data[:, 1], (0, total_nbins - histid), "constant")
-        * ncase,
-        np.pad(data[:, 2], (0, total_nbins - histid), "constant")
-        * ncase,
+        np.pad(
+            unp.uarray(data[:, 1], data[:, 2]),
+            (0, total_nbins - histid),
+            "constant",
+        )
+        * ncase
     )

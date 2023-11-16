@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 import _thread
+import csv
 import os
 import pickle
 import queue
 import time
 
 import numpy as np
+import uncertainties.unumpy as unp
+from uncertainties import ufloat_fromstr
 
 from get_histogram import get_histogram
 
 # main program variables
 # these are what you tweak to alter the simulation
 MAX_ENERGY = 2
-#BIN_SIZE = 0.01
-NBINS = 2000# int(MAX_ENERGY / BIN_SIZE)
+# BIN_SIZE = 0.01
+NBINS = 4  # int(MAX_ENERGY / BIN_SIZE)
 # re-calculate BIN_SIZE in case the number given doesn't evenly divide MAX_ENERGY
 BIN_SIZE = MAX_ENERGY / NBINS
 BIN_OFFSET = BIN_SIZE / 2
-NCASE = 1e6
+NCASE = 1e2
 
 # this is used to facilitate communications between the main and controller threads
 q = queue.Queue()
@@ -47,21 +50,19 @@ def controller_thread(bin_energies=None):
         histid = q.get()
 
         with print_lock:
-            print("generating histogram for histid =", histid)
+            print(f"generating histogram for histid = {histid}")
 
-        hist_values, errors = get_histogram(
+        histogram = get_histogram(
             histid, NCASE, NBINS, MAX_ENERGY, bin_energies=bin_energies
         )
 
         # save the results of execution to a temperary file
         with intermediate_file_lock:  # noqa: SIM117
-            with open(intermediate_file, "a") as f:
-                print(histid, end="\t", file=f)
-                print(" ".join(map(str, hist_values)), end="\t", file=f)
-                print(" ".join(map(str, errors)), file=f)
+            with open(intermediate_file, "a", newline="") as f:
+                csv.writer(f).writerow([histid, *histogram])
 
         with print_lock:
-            print("histogram for histid =", histid, "done")
+            print(f"histogram for histid = {histid} done")
 
         # mark one job as done
         with finished_jobs_lock:
@@ -69,8 +70,8 @@ def controller_thread(bin_energies=None):
 
 
 def main():
-    print("bins of", BIN_SIZE, "MeV")
-    print("intermediate data in", intermediate_file)
+    print(f"bins of {BIN_SIZE} MeV")
+    print(f"intermediate data in {intermediate_file!r}")
 
     # for testing purposes
     # this is used to make sure that the histogram bins are what we expect them to be
@@ -94,24 +95,19 @@ def main():
             time.sleep(1)
 
     # read the data from the intermediate file and pickle it
-    response_matrix = np.empty((NBINS, NBINS), dtype=float)
-    response_matrix_error = np.empty((NBINS, NBINS), dtype=float)
-    with open(intermediate_file) as f:
-        for line in f:
-            histid, values, errors = line.strip().split("\t")
-            histid = int(histid)
-            response_matrix[:, histid - 1] = np.array(
-                list(map(float, values.split(" ")))
-            )
-            response_matrix_error[:, histid - 1] = np.array(
-                list(map(float, errors.split(" ")))
-            )
+    response_matrix = unp.uarray(np.empty((NBINS, NBINS)), 0)
+    with open(intermediate_file, newline="") as f:
+        for row in csv.reader(f):
+            [histid, *histogram] = row
+            response_matrix[:, int(histid) - 1] = [
+                ufloat_fromstr(x) for x in histogram
+            ]
 
     # save the data to a file using pickle
     savename = f"save-{fname_base}.pickle"
     with open(savename, "wb") as save_file:
-        pickle.dump((response_matrix, response_matrix_error), save_file)
-        print("data saved to", repr(savename))
+        pickle.dump(response_matrix, save_file)
+        print(f"data saved to {savename!r}")
 
 
 if __name__ == "__main__":
