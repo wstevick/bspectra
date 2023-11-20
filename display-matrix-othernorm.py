@@ -31,6 +31,7 @@ with gzip.open(
 
 # need to transpose the matrix, because of how pygame handles arrays
 # also, this way the first axis is the histogram id, which is also more convenient
+# this means that variables in my code named "column" often refer to rows in the actual matrix
 matrix = matrix.T
 # normalize the matrix
 matrix -= matrix.min()
