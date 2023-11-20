@@ -34,9 +34,8 @@ with gzip.open(
 # this means that variables in my code named "column" often refer to rows in the actual matrix
 matrix = matrix.T
 # normalize the matrix
-column_sums = matrix.sum(axis=1)
-column_sums[column_sums == 0] = 1
-matrix /= column_sums[:, None]
+matrix -= matrix.min()
+matrix /= matrix.max()
 # scale the matrix to show off low values
 # I may experiment with different algorithms for this, in the future
 matrix = k / (k - np.log(matrix))
