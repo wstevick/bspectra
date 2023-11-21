@@ -16,7 +16,7 @@ hdat["hist_data"] = [
     for hist in hdat["hist_data"]
 ]
 
-ofile = f'{sys.argv[2].removesuffix(".pickle.gz")}-inverted.pickle.gz'
+ofile = f'{sys.argv[2].removesuffix(".pickle.gz")}-unfolded.pickle.gz'
 with gzip.open(ofile, "wb") as f:
     pickle.dump(hdat, f)
 print(f"saved to {ofile!r}")
