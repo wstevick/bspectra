@@ -128,11 +128,11 @@
     # Source, phantom, and simulation geometries all need to be explicitly 
     # specified to egs_brachy
 
-    source geometries = seed
+    source geometries = phantom
 
     phantom geometries = phantom
 
-    simulation geometry = final
+    simulation geometry = phantom
 
 :stop geometry definition:
 
