@@ -31,7 +31,8 @@ bin_size = max_energy / nbins
 xs = np.arange(nbins + 1) * bin_size
 bin_centers = xs[:-1] + bin_size * 0.5
 
-plt.yscale("log")
+if len(sys.argv) < 4 or sys.argv[3] != 'nolog':
+    plt.yscale("log")
 plt.xlabel("KeV")
 
 # the histogram plot, with errorbars
