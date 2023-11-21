@@ -9,7 +9,7 @@ energies = [0.5, 1, 1.5, 2]
 max_energy = max(energies)
 nbins = 200
 bin_size = max_energy / nbins
-ncase = 1e7
+ncase = 1e5
 
 hist_data = [
     get_histogram(int(energy / bin_size), ncase, nbins, max_energy)
