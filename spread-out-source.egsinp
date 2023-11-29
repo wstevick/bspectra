@@ -6,7 +6,7 @@
 
 #-------------------------------------------------------------------------------
 :start run control:
-    ncase = TEMPLATE_VAR_NCASE
+    ncase = 1e5
 	geometry error limit = 100
 :stop run control:
 
@@ -20,8 +20,8 @@
 #-------------------------------------------------------------------------------
 # This input block allows 'pegsless' runs
 :start media definition:
-    ae = TEMPLATE_VAR_AE
-    ap = TEMPLATE_VAR_AP
+    ae = 0.521
+    ap = 0.01
     ue = 50.511
     up = 50
     
@@ -84,51 +84,19 @@
         :stop geometry definition:
 		
     :stop geometry:
-	
-	# The source geometry
-    :start geometry:
-        name = seed
-        library = egs_glib
-        :start geometry definition:
-
-            :start geometry:
-                library = egs_spheres
-                name = point
-                midpoint = 0 0 0
-                type = EGS_cSpheres
-                radii = 0.0001
-
-                :start media input:
-                    media = AIR_TG43_LD
-                    set medium = 0 0
-                :stop media input:
-            :stop geometry:
-
-            simulation geometry = point
-
-        :stop geometry definition:
-    :stop geometry:
-	
-    # Inscribe the seed in the scoring phantom
-    :start geometry:
-        name = phantom_with_seed
-        library = egs_genvelope
-        base geometry = phantom
-        inscribed geometries = seed
-    :stop geometry:
 
     # Inscribe the phantom+seed in the large air box
     :start geometry:
         name = final
         library = egs_genvelope
         base geometry = box
-        inscribed geometries = phantom_with_seed
+        inscribed geometries = phantom
     :stop geometry:
 
     # Source, phantom, and simulation geometries all need to be explicitly 
     # specified to egs_brachy
 
-    source geometries = seed
+    source geometries = phantom
 
     phantom geometries = phantom
 
@@ -137,27 +105,25 @@
 :stop geometry definition:
 
 #-------------------------------------------------------------------------------
-:start volume correction:
+#:start volume correction:
 
     # Scoring voxels which contain source geometries need to have their 
     # volumes corrected to accurately score dose
-  :start source volume correction:
-      correction type = correct
-      density of random points (cm^-3) = 1E8
+ # :start source volume correction:
+  #    correction type = correct
+   #   density of random points (cm^-3) = 1E8
 
       # This is a shape that encompasses the entire source geometry.
       # Volume correction will only occur within the boundaries of this shape.
       # Shape to define the bounding volume for volume correction and region discovery
-      :start shape:
+    #  :start shape:
 
-          type = sphere
-          radius = 0.00011
-          midpoint = 0 0 0
+          
 
-      :stop shape:
-  :stop source volume correction:
+     # :stop shape:
+#  :stop source volume correction:
 
-:stop volume correction:
+#:stop volume correction:
 
 #-------------------------------------------------------------------------------
 :start source definition:
@@ -172,15 +138,14 @@
         # for the sphere source model
         :start shape:
 
-            type = sphere
-            position = 0 0 0
-            radius = 0.0000001
+            type = box
+			box size = 0.06
 
         :stop shape:
 
         :start spectrum:
             type = monoenergetic
-            energy = TEMPLATE_VAR_ENERGY
+            energy = 0.5
         :stop spectrum:
     :stop source:
 
@@ -217,7 +182,7 @@
 	
 	#pulse height distribution (hopefully)
 	pulse height regions = 1
-	pulse height bins = TEMPLATE_VAR_NBINS
+	pulse height bins = 50
 	
 #	:start spectrum scoring:
 #        type = surface count
