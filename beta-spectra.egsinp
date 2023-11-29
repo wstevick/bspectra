@@ -190,7 +190,7 @@
         base source = PointSource
         :start spectrum:
             type = radionuclide
-            nuclide = Ir-192
+            nuclide = Cl-36
             output beta spectra = yes
         :stop spectrum:
     :stop source:

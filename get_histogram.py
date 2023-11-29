@@ -12,7 +12,7 @@ import uncertainties.unumpy as unp
 MAX_TRIES = 5
 
 # read in the EGS input template code
-with open("spread-out-source-histogram.egsinp.template") as code_file:
+with open("histogram.egsinp.template") as code_file:
     template_code = code_file.read()
 
 # this regular expression matches the output format for the histogram
