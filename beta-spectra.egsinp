@@ -6,7 +6,7 @@
 
 #-------------------------------------------------------------------------------
 :start run control:
-    ncase = 1e4
+    ncase = 1e5
 	geometry error limit = 100
 :stop run control:
 
@@ -45,7 +45,7 @@
                 box size = 50
       
                 :start media input:
-                    media = AIR_TG43
+                    media = Au
                 :stop media input:
 
             :stop geometry:
@@ -55,36 +55,6 @@
         :stop geometry definition:
     :stop geometry:
 
-	# The volume in which we want to dose score (the gold MMC)
-    :start geometry:
-		name = phantom
-        library = egs_glib
-        ##Geometry for gold MMC cube 0.6mm^3
-        ## -0.03cm <= X, Y, Z <= 0.03cm with 1 voxel
-        :start geometry definition:
-
-            :start geometry:
-
-                name = xyz_0.06cmx0.06cmx0.06cm_0.03mm
-                library = egs_ndgeometry
-                type    = EGS_XYZGeometry
-
-                x-slabs = -0.03, 0.06, 1
-                y-slabs = -0.03, 0.06, 1
-                z-slabs = -0.03, 0.06, 1
-
-                :start media input:
-                    media = Au
-                :stop media input:
-
-            :stop geometry:
-
-            simulation geometry = xyz_0.06cmx0.06cmx0.06cm_0.03mm
-
-        :stop geometry definition:
-		
-    :stop geometry:
-	
 	# The source geometry
     :start geometry:
         name = seed
@@ -108,21 +78,13 @@
 
         :stop geometry definition:
     :stop geometry:
-	
-    # Inscribe the seed in the scoring phantom
-    :start geometry:
-        name = phantom_with_seed
-        library = egs_genvelope
-        base geometry = phantom
-        inscribed geometries = seed
-    :stop geometry:
 
     # Inscribe the phantom+seed in the large air box
     :start geometry:
         name = final
         library = egs_genvelope
         base geometry = box
-        inscribed geometries = phantom_with_seed
+        inscribed geometries = seed
     :stop geometry:
 
     # Source, phantom, and simulation geometries all need to be explicitly 
@@ -130,7 +92,7 @@
 
     source geometries = seed
 
-    phantom geometries = phantom
+    phantom geometries = box
 
     simulation geometry = final
 
@@ -228,7 +190,7 @@
 	
 	#pulse height distribution (hopefully)
 	pulse height regions = 1
-	pulse height bins = 200
+	pulse height bins = 71
 	
 #	:start spectrum scoring:
 #        type = surface count
@@ -282,7 +244,7 @@
 		output format = IAEA
 		particle type = all
 		output directory = 
-		phase space geometry = phantom
+		phase space geometry = box
 		score particles on = entry and exit
 	:stop ausgab object:
 	
