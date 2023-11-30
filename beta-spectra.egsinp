@@ -6,7 +6,7 @@
 
 #-------------------------------------------------------------------------------
 :start run control:
-    ncase = 1e5
+    ncase = 1e7
 	geometry error limit = 100
 :stop run control:
 
@@ -69,7 +69,7 @@
                 radii = 0.0001
 
                 :start media input:
-                    media = AIR_TG43_LD
+                    media = Vacuum
                     set medium = 0 0
                 :stop media input:
             :stop geometry:
@@ -153,7 +153,6 @@
         :start spectrum:
             type = radionuclide
             nuclide = Cl-36
-            output beta spectra = yes
         :stop spectrum:
     :stop source:
 
@@ -189,7 +188,7 @@
     muen for media = Au
 	
 	#pulse height distribution (hopefully)
-	pulse height regions = 1
+	pulse height regions = 0
 	pulse height bins = 71
 	
 #	:start spectrum scoring:

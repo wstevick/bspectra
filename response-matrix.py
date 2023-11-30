@@ -40,6 +40,12 @@ intermediate_file = f"intermediate-{fname_base}.csv"
 intermediate_file_lock = _thread.allocate_lock()
 
 
+def get_response_matrix_column(
+    histid, ncase, total_nbins, max_energy=2, ntries=0, bin_energies=None
+):
+    return get_histogram(histid, ncase, total_nbins, max_energy=2, ntries, bin_energies) * max_energy/total_nbins / ncase
+
+
 # one of these will run for every core on the CPU
 # these make sure that there's always as many EGSnrc jobs going as cores
 # I'm calling them "controller" threads because they control the exteranal EGSnrc processes
@@ -53,7 +59,7 @@ def controller_thread(bin_energies=None):
         with print_lock:
             print(f"generating histogram for histid = {histid}")
 
-        histogram = get_histogram(
+        histogram = get_response_matrix_column(
             histid, NCASE, NBINS, MAX_ENERGY, bin_energies=bin_energies
         )
 
