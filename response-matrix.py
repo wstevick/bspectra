@@ -41,9 +41,9 @@ intermediate_file_lock = _thread.allocate_lock()
 
 
 def get_response_matrix_column(
-    histid, ncase, total_nbins, max_energy=2, ntries=0, bin_energies=None
+    histid, ncase, total_nbins, max_energy=2, bin_energies=None
 ):
-    return get_histogram(histid, ncase, total_nbins, max_energy=2, ntries, bin_energies) * max_energy/total_nbins / ncase
+    return get_histogram(histid, ncase, total_nbins, max_energy, bin_energies=bin_energies) * max_energy/total_nbins / ncase
 
 
 # one of these will run for every core on the CPU
