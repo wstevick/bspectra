@@ -29,7 +29,7 @@ for spike in visible_spikes:
                 found.append(
                     [
                         (ray_names[idx], round(energy, 10))
-                        for (idx, energy) in [(idx1, energy1)(idx2, energy2)]
+                        for (idx, energy) in [(idx1, energy1), (idx2, energy2)]
                     ]
                 )
 
