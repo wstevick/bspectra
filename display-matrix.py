@@ -11,12 +11,12 @@ import uncertainties.unumpy as unp
 
 # this controls how much lower values are scaled up
 # for k = log 10, 0.1 becomes 1/2, 0.01 becomes 1/3, 0.001 becomes 1/4, etc.
-k = math.log(10)
+k = math.log(4)
 
 
-# input from 0 to 1, output RGB triplet
+# input from -1 to 1, output RGB triplet
 def get_color(v):
-    return np.array(colorsys.hsv_to_rgb(2 / 3 + v / 3, 1, v * 255))
+    return np.array(colorsys.hsv_to_rgb((5 + v) / 6, 1, abs(v) * 255))
 
 
 # the same function, but over a matrix
@@ -34,11 +34,11 @@ with gzip.open(
 # this means that variables in my code named "column" often refer to rows in the actual matrix
 matrix = matrix.T
 # normalize the matrix
-matrix -= matrix.min()
 matrix /= matrix.max()
 # scale the matrix to show off low values
 # I may experiment with different algorithms for this, in the future
-matrix = k / (k - np.log(matrix))
+matrix = k / (k - np.log(np.abs(matrix))) * np.sign(matrix)
+print(matrix.min(), matrix.max())
 
 # create a screen with the dimensions of the matrix, then use the color function to put the matrix on the screen
 screen = pygame.display.set_mode(matrix.shape)
