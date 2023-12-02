@@ -1,0 +1,158 @@
+##############################################################################
+#
+# MMC Simulation with monoenergetic point source. Designed for use with tutor7pp											   
+#
+##############################################################################
+
+#-------------------------------------------------------------------------------
+:start run control:
+    ncase = TEMPLATE_VAR_NCASE
+	geometry error limit = 100
+:stop run control:
+
+#-------------------------------------------------------------------------------
+:start run mode:
+    # egs_brachy has 3 run modes: 
+    #        'normal', 'superposition', and 'volume correction only'
+    run mode = normal
+:stop run mode:
+
+#-------------------------------------------------------------------------------
+# This input block allows 'pegsless' runs
+:start media definition:
+    ae = TEMPLATE_VAR_AE
+    ap = TEMPLATE_VAR_AP
+    ue = 50.511
+    up = 50
+    
+    material data file = ../egs_brachy/lib/media/material.dat
+:stop media definition:
+
+#-------------------------------------------------------------------------------
+# A gold MMC 
+:start source definition:
+
+    # Typical egs++ source input block
+    :start source:
+        library = egs_isotropic_source
+        name = PointSource
+        charge = -1
+
+        # This defines the radioactivity distribution within the source. 
+        # for the sphere source model
+        :start shape:
+
+            type = sphere
+            position = 0 0 0
+            radius = 0.0000001
+
+        :stop shape:
+
+        :start spectrum:
+            type = monoenergetic
+            energy = 0.5
+        :stop spectrum:
+    :stop source:
+
+    :start source:
+        name = radioactive_sample
+        library = egs_radionuclide_source
+        base source = PointSource
+        :start spectrum:
+            type = radionuclide
+            nuclide = Cl-36
+        :stop spectrum:
+    :stop source:
+
+    # The position of the source
+    :start transformations:
+        ## A null transformation
+
+        :start transformation:
+            translation = 0, 0, 0
+        :stop transformation:
+    :stop transformations:
+
+    # The source needs to be explicitly specified to egs_brachy. 
+    # This should be the same as the 'name' defined in source input block above.
+    simulation source = radioactive_sample
+
+:stop source definition:
+
+
+#-------------------------------------------------------------------------------
+:start scoring options:
+
+    # Many scoring options are available in egs_brachy. 
+    # Please see the documentation for a full list.
+	
+	score tracklength dose = yes
+	score energy deposition = yes
+   
+    # The path to a file containing mass-energy absorption data for the 
+    # relevant media in the simulation    
+    muen file = ../egs_brachy/lib/muen/brachy_gold_1.5MeV.muendat
+    # Specify which media dose is scored in
+    muen for media = Au
+	
+	#pulse height distribution (hopefully)
+	pulse height regions = 1
+	pulse height bins = TEMPLATE_VAR_NBINS
+	
+#	:start spectrum scoring:
+#        type = surface count
+#        particle type = photon
+#        minimum energy = 0.000
+#        maximum energy = 0.5
+#        number of bins = 50
+#        output format = xmgr
+#   :stop spectrum scoring:
+
+:stop scoring options:
+
+#-------------------------------------------------------------------------------
+# Transport parameters
+## Default MC parameters for low energy sources; electron cutoff energy 1.5 MeV, photon cutoff energy 1 keV.
+
+:start MC transport parameter:
+    Global ECUT                    = 0.512
+    Global PCUT                    = 0.001
+    Source ECUT                    = 0.512
+    Source PCUT                    = 0.001
+    Fluorescent Photon Cutoff      = 0.001
+    Brems Cross Sections           = NRC
+    Rayleigh Scattering            = On
+    Electron Impact Ionization     = On
+:stop MC transport parameter:
+
+################################
+### AUSGAB OBJECTS
+################################
+:start ausgab object definition: # Only 1 ausgab definition block allowed
+
+	### Particle tracks
+	:start ausgab object:
+		name = tracks
+		library = egs_track_scoring
+	:stop ausgab object:
+	
+	### Dose scoring
+	:start ausgab object:
+		library = egs_dose_scoring
+		name = my_dose_scoring
+		region dose = yes
+		volume = 0.000216
+		dose regions = 1
+	:stop ausgab object:
+	
+	:start ausgab object:
+		library = egs_phsp_scoring
+		name = phsp_score
+		output format = IAEA
+		particle type = all
+		output directory = 
+		phase space geometry = phantom
+		score particles on = entry and exit
+	:stop ausgab object:
+	
+:stop ausgab object definition:
