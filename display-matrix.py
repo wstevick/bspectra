@@ -16,7 +16,7 @@ k = math.log(4)
 
 # input from -1 to 1, output RGB triplet
 def get_color(v):
-    return np.array(colorsys.hsv_to_rgb((5 + v) / 6, 1, abs(v) * 255))
+    return np.array(colorsys.hsv_to_rgb((2 + v) / 3, 1, abs(v) * 255))
 
 
 # the same function, but over a matrix
@@ -27,7 +27,6 @@ with gzip.open(
     sys.stdin.fileno() if sys.argv[1] == "-" else sys.argv[1], "rb"
 ) as f:
     matrix = unp.nominal_values(pickle.load(f))
-
 
 # need to transpose the matrix, because of how pygame handles arrays
 # also, this way the first axis is the histogram id, which is also more convenient
