@@ -189,7 +189,7 @@
 	
 	#pulse height distribution (hopefully)
 	pulse height regions = 0
-	pulse height bins = 71
+	pulse height bins = 100
 	
 #	:start spectrum scoring:
 #        type = surface count
