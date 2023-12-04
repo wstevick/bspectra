@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-import colorsys
 import gzip
-import math
 import pickle
 import sys
 
@@ -9,18 +7,8 @@ import numpy as np
 import pygame
 import uncertainties.unumpy as unp
 
-# this controls how much lower values are scaled up
-# for k = log 10, 0.1 becomes 1/2, 0.01 becomes 1/3, 0.001 becomes 1/4, etc.
-k = math.log(4)
-
-
-# input from -1 to 1, output RGB triplet
-def get_color(v):
-    return np.array(colorsys.hsv_to_rgb((2 + v) / 3, 1, abs(v) * 255))
-
-
-# the same function, but over a matrix
-to_color = np.vectorize(get_color, signature="()->(3)")
+# values below this will be clamped to MIN_V so they can be logged
+MIN_V = 1e-4
 
 
 with gzip.open(
@@ -29,19 +17,26 @@ with gzip.open(
     matrix = unp.nominal_values(pickle.load(f))
 
 # need to transpose the matrix, because of how pygame handles arrays
-# also, this way the first axis is the histogram id, which is also more convenient
-# this means that variables in my code named "column" often refer to rows in the actual matrix
 matrix = matrix.T
 # normalize the matrix
-matrix /= matrix.max()
-# scale the matrix to show off low values
-# I may experiment with different algorithms for this, in the future
-matrix = k / (k - np.log(np.abs(matrix))) * np.sign(matrix)
-print(matrix.min(), matrix.max())
+matrix /= max(matrix.max(), abs(matrix.min()))
+
+# keep track of where it's negative, for coloring later
+negs = (matrix < 0).astype(int)
+# take the logarithm and normalize
+matrix = 1 - np.log(np.maximum(np.abs(matrix), MIN_V)) / np.log(MIN_V)
+
+# red where the original matrix was negative, green where it was positive
+colors = np.zeros((*matrix.shape, 3))
+colors[:, :, 0] = matrix * negs
+colors[:, :, 1] = matrix * (1 - negs)
+
+# pygame uses a 0-255 scale
+colors *= 255
 
 # create a screen with the dimensions of the matrix, then use the color function to put the matrix on the screen
 screen = pygame.display.set_mode(matrix.shape)
-pygame.surfarray.blit_array(screen, to_color(matrix))
+pygame.surfarray.blit_array(screen, colors)
 
 # traditional pygame event loop. Waits until users hits "close", then exits
 while True:
