@@ -20,8 +20,8 @@
 #-------------------------------------------------------------------------------
 # This input block allows 'pegsless' runs
 :start media definition:
-    ae = 0.521
-    ap = 0.01
+    ae = 0.512
+    ap = 0.001
     ue = 50.511
     up = 50
     

@@ -12,7 +12,7 @@ import uncertainties.unumpy as unp
 MAX_TRIES = 5
 
 # read in the EGS input template code
-with open("beta-spectra-histogram.egsinp.template") as code_file:
+with open("histogram.egsinp.template") as code_file:
     template_code = code_file.read()
 
 # this regular expression matches the output format for the histogram
@@ -55,9 +55,9 @@ def get_histogram(
         .replace("TEMPLATE_VAR_ENERGY", str(energy))
         .replace("TEMPLATE_VAR_NCASE", str(ncase))
         .replace(
-            "TEMPLATE_VAR_AE", str(max(0.511 + bin_size, 0.5115667283535004))
+            "TEMPLATE_VAR_AE", str(max(0.511 + bin_size/10, 0.5115667283535004))
         )
-        .replace("TEMPLATE_VAR_AP", str(max(bin_size, 0.000999995278993281)))
+        .replace("TEMPLATE_VAR_AP", str(max(bin_size/10, 0.000999995278993281)))
     )
     try:
         # create temperary egsinp file with the code generated
