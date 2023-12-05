@@ -15,7 +15,7 @@ from get_histogram import get_histogram
 
 # main program variables
 # these are what you tweak to alter the simulation
-MAX_ENERGY = 2 # 0.70953
+MAX_ENERGY = 2  # 0.70953
 # BIN_SIZE = 0.01
 NBINS = 200  # int(MAX_ENERGY / BIN_SIZE)
 # re-calculate BIN_SIZE in case the number given doesn't evenly divide MAX_ENERGY
@@ -43,7 +43,14 @@ intermediate_file_lock = _thread.allocate_lock()
 def get_response_matrix_column(
     histid, ncase, total_nbins, max_energy=2, bin_energies=None
 ):
-    return get_histogram(histid, ncase, total_nbins, max_energy, bin_energies=bin_energies) * max_energy/total_nbins / ncase
+    return (
+        get_histogram(
+            histid, ncase, total_nbins, max_energy, bin_energies=bin_energies
+        )
+        * max_energy
+        / total_nbins
+        / ncase
+    )
 
 
 # one of these will run for every core on the CPU

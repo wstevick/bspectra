@@ -32,7 +32,7 @@ bin_size = max_energy / nbins
 xs = np.arange(nbins + 1) * bin_size
 bin_centers = xs[:-1] + bin_size * 0.5
 
-if len(sys.argv) < 4 or sys.argv[3] != 'nolog':  # noqa: PLR2004
+if len(sys.argv) < 4 or sys.argv[3] != "nolog":  # noqa: PLR2004
     plt.yscale("log")
 plt.xlabel("KeV")
 
@@ -56,7 +56,7 @@ visible_x_rays = [
     (r"$L_3N_4 L_{\beta 15}$", 2.515e-2, 11.564),
     (r"$L_3N_5 L_{\beta 2}$", 0.2267, 11.58212),
     (r"$L_3N_{6,7} L_u$", 1.67e-4, 11.8305),
-    #(r"L3 edge", 11.92778),
+    # (r"L3 edge", 11.92778),
     (r"$L_2N_2$", 7.43e-7, 13.0894),
     (r"$L_2N_3$", 4.35e-4, 13.18489),
     (r"$L_2N_4 L_{\gamma 1}$", 0.309, 13.3779),
@@ -65,8 +65,8 @@ visible_x_rays = [
     (r"$L_1N_2 L_{\gamma 2}$", 9.43e-2, 13.71),
     (r"$L_2N_6 L_v$", 1.12e-3, 13.6425),
     (r"$L_2N_7$", 0, 13.6462),
-    #(r"L2 edge", 13.74167),
-    #("K edge", 80.7347),
+    # (r"L2 edge", 13.74167),
+    # ("K edge", 80.7347),
     (r"$KN_2 K_{\beta_2^{II}}$", 0.6525, 80.0825),
     (r"$KN_3 K_{\beta_2^I}$", 1.2805, 80.1779),
     (r"$KM_5 K_{\beta_5^I}$", 8.29e-2, 78.5203),
@@ -81,7 +81,9 @@ visible_x_rays = [
 bins_with_x_rays = defaultdict(list)
 for name, intensity, energy in visible_x_rays:
     pos_on_plot = source_energy - energy
-    bins_with_x_rays[np.argmin(np.abs(bin_centers - pos_on_plot))].append((name, intensity, pos_on_plot))
+    bins_with_x_rays[np.argmin(np.abs(bin_centers - pos_on_plot))].append(
+        (name, intensity, pos_on_plot)
+    )
 
 for binid, rays in bins_with_x_rays.items():
     max_intensity = max(intensity for _, intensity, _ in rays)
@@ -90,11 +92,7 @@ for binid, rays in bins_with_x_rays.items():
     for name, intensity, pos_on_plot in rays:
         if intensity * 10 < max_intensity:
             continue
-        plt.annotate(
-            f'{name} ({intensity})',
-            (pos_on_plot, heights[binid]),
-            rotation=90,
-        )
+        plt.annotate(name, (pos_on_plot, heights[binid]), rotation=90)
         plt.axvline(pos_on_plot, color="purple")
 
 plt.show()
