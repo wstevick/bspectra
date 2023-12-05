@@ -6,7 +6,7 @@
 
 #-------------------------------------------------------------------------------
 :start run control:
-    ncase = 1e4
+    ncase = 1e6
 	geometry error limit = 100
 :stop run control:
 
@@ -20,8 +20,8 @@
 #-------------------------------------------------------------------------------
 # This input block allows 'pegsless' runs
 :start media definition:
-    ae = 0.512
-    ap = 0.001
+    ae = 0.521
+    ap = 0.01
     ue = 50.511
     up = 50
     
@@ -189,7 +189,7 @@
 	
 	#pulse height distribution (hopefully)
 	pulse height regions = 0
-	pulse height bins = 500
+	pulse height bins = 100
 	
 #	:start spectrum scoring:
 #        type = surface count

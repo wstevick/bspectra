@@ -55,9 +55,9 @@ def get_histogram(
         .replace("TEMPLATE_VAR_ENERGY", str(energy))
         .replace("TEMPLATE_VAR_NCASE", str(ncase))
         .replace(
-            "TEMPLATE_VAR_AE", str(max(0.511 + bin_size/10, 0.5115667283535004))
+            "TEMPLATE_VAR_AE", str(max(0.511 + bin_size, 0.5115667283535004))
         )
-        .replace("TEMPLATE_VAR_AP", str(max(bin_size/10, 0.000999995278993281)))
+        .replace("TEMPLATE_VAR_AP", str(max(bin_size, 0.000999995278993281)))
     )
     try:
         # create temperary egsinp file with the code generated
