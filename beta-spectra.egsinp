@@ -6,7 +6,7 @@
 
 #-------------------------------------------------------------------------------
 :start run control:
-    ncase = 1e7
+    ncase = 1e4
 	geometry error limit = 100
 :stop run control:
 
@@ -189,7 +189,7 @@
 	
 	#pulse height distribution (hopefully)
 	pulse height regions = 0
-	pulse height bins = 100
+	pulse height bins = 500
 	
 #	:start spectrum scoring:
 #        type = surface count
