@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-import gzip
-import pickle
-import sys
+from time import time
 
 from get_histogram import get_histogram
 
@@ -14,12 +12,9 @@ ncase = 1e5
 max_energy = max(energies)
 bin_size = max_energy / nbins
 
-hist_data = [
-    get_histogram(int(energy / bin_size), ncase, nbins, max_energy)
-    for energy in energies
-]
 
-with gzip.open(
-    sys.stdout.fileno() if sys.argv[1] == "-" else sys.argv[1], "wb"
-) as f:
-    pickle.dump({"energies": energies, "hist_data": hist_data}, f)
+for energy in energies:
+    print(energy, end=" ")
+    start_t = time()
+    get_histogram(int(energy / bin_size), ncase, nbins, max_energy)
+    print(time() - start_t)
