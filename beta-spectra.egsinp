@@ -6,7 +6,7 @@
 
 #-------------------------------------------------------------------------------
 :start run control:
-    ncase = 1e6
+    ncase = 1e7
 	geometry error limit = 100
 :stop run control:
 
