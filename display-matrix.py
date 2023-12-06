@@ -38,6 +38,9 @@ colors *= 255
 screen = pygame.display.set_mode(matrix.shape)
 pygame.surfarray.blit_array(screen, colors)
 
+# save the image to a file for further use
+pygame.image.save(screen, "matrix.png")
+
 # traditional pygame event loop. Waits until users hits "close", then exits
 while True:
     if any(event.type == pygame.QUIT for event in pygame.event.get()):
