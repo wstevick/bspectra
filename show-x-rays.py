@@ -35,6 +35,8 @@ bin_centers = xs[:-1] + bin_size * 0.5
 if len(sys.argv) < 4 or sys.argv[3] != "nolog":  # noqa: PLR2004
     plt.yscale("log")
 plt.xlabel("KeV")
+plt.tick_params(axis='x', labelsize=13)
+plt.tick_params(axis='y', labelsize=13)
 
 # the histogram plot, with errorbars
 plt.errorbar(bin_centers, heights, errors, 0, fmt="none", color="red")
