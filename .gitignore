@@ -10,3 +10,5 @@ __pycache__
 *.mederr
 phsp_score.*
 matrix.png
+huge-matrix.pickle.gz
+huge-matrix-inverted.pickle.gz
